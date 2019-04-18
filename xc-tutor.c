@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <string.h>
+#define int long long // to work with 64bit address
 
 int token;                    // current token
 int token_val;                // value of current token (mainly for number)
@@ -440,7 +441,7 @@ void expression(int level) {
                 // emit code, default behaviour is to load the value of the
                 // address which is stored in `ax`
                 expr_type = id[Type];
-                *++text = (expr_type == Char) ? LC : LI;
+                *++text = (expr_type == CHAR) ? LC : LI;
             }
         }
         else if (token == '(') {
@@ -1206,7 +1207,7 @@ int eval() {
         else if (op == PUSH) {*--sp = ax;}                                     // push the value of ax onto the stack
         else if (op == JMP)  {pc = (int *)*pc;}                                // jump to the address
         else if (op == JZ)   {pc = ax ? pc + 1 : (int *)*pc;}                   // jump if ax is zero
-        else if (op == JNZ)  {pc = ax ? (int *)*pc : pc + 1;}                   // jump if ax is zero
+        else if (op == JNZ)  {pc = ax ? (int *)*pc : pc + 1;}                   // jump if ax is not zero
         else if (op == CALL) {*--sp = (int)(pc+1); pc = (int *)*pc;}           // call subroutine
         //else if (op == RET)  {pc = (int *)*sp++;}                              // return from subroutine;
         else if (op == ENT)  {*--sp = (int)bp; bp = sp; sp = sp - *pc++;}      // make new stack frame
@@ -1251,8 +1252,11 @@ int eval() {
     return 0;
 }
 
+#undef int // Mac/clang needs this to compile
+
 int main(int argc, char **argv)
 {
+    #define int long long // to work with 64bit address
 
     int i, fd;
     int *tmp;
